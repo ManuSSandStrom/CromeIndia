@@ -16,6 +16,6 @@ services:
       - key: MONGODB_URI
         sync: false
       - key: CLIENT_URL
-        sync: false
+        value: https://cromeindia.vercel.app
       - key: GEMINI_API_KEY
         sync: false
