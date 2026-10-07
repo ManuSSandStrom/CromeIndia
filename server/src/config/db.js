@@ -1,0 +1,2 @@
+import mongoose from 'mongoose';
+export async function connectDatabase(){if(process.env.NODE_ENV!=='production'&&process.env.SKIP_DATABASE==='true'){console.warn('SKIP_DATABASE is enabled for a local smoke check; database routes will be unavailable.');return}if(!process.env.MONGODB_URI){console.warn('MONGODB_URI is not configured; database routes will be unavailable.');return}await mongoose.connect(process.env.MONGODB_URI);console.info('MongoDB connected')}

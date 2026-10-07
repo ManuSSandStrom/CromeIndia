@@ -1,0 +1,3 @@
+import jwt from 'jsonwebtoken';
+export function requireAdmin(req,res,next){const header=req.headers.authorization||'';if(!header.startsWith('Bearer '))return res.status(401).json({success:false,message:'Authentication required.'});try{req.admin=jwt.verify(header.slice(7),process.env.JWT_SECRET);next()}catch{return res.status(401).json({success:false,message:'Session expired. Please sign in again.'})}}
+export function requireRole(...roles){return(req,res,next)=>{if(!req.admin||!roles.includes(req.admin.role))return res.status(403).json({success:false,message:'You do not have access to this resource.'});next()}}

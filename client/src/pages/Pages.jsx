@@ -1,0 +1,284 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { ArrowRight, ArrowUpRight, Check, ChevronRight, Filter, MessageCircle, Search, SlidersHorizontal } from 'lucide-react';
+import { api } from '../lib/api.js';
+import { trackEvent } from '../lib/analytics.js';
+import { useApiList } from '../hooks/useApiList.js';
+import { settings, products as fallbackProducts, sports as fallbackSports, services as fallbackServices, serviceDetails, productCategories, galleryItems as fallbackGallery } from '../data/content.js';
+import { Breadcrumbs, ImageSlot, NamedImage, PageHero, ProductCard, SectionHeading, SpecificationList, SportCard } from '../components/Catalog.jsx';
+import { useSiteSettings } from '../context/SiteContext.jsx';
+import { productImage, sportImage, siteImages, projectGalleryItems } from '../data/images.js';
+import EditorialSection from '../components/EditorialSection.jsx';
+import ServiceFAQs from '../components/ServiceFAQs.jsx';
+import { productEditorial, serviceEditorial, serviceFaqs } from '../data/detailContent.js';
+
+/* â”€â”€ Scroll-reveal hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function useReveal(options = {}) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('revealed');
+          observer.unobserve(el);
+        }
+      },
+      { threshold: options.threshold ?? 0.12, rootMargin: options.rootMargin ?? '0px 0px -40px 0px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return ref;
+}
+
+function Reveal({ children, className = '', delay = 0, as: Tag = 'div' }) {
+  const ref = useReveal();
+  return (
+    <Tag ref={ref} className={`reveal-up ${className}`} style={delay ? { transitionDelay: `${delay}ms` } : undefined}>
+      {children}
+    </Tag>
+  );
+}
+
+function ProductStoryRow({ product, index, selected, compareDisabled, onCompare }) {
+  const media = product.images?.[0]?.url || productImage(product);
+  const image = media?.url || media;
+  const knownSpecs = [product.pileHeightMm && `${product.pileHeightMm} mm pile height`, product.specifications?.yarn, product.specifications?.gauge].filter(Boolean);
+  return <Reveal as="article" className={`product-story-row${index % 2 ? ' is-reversed' : ''}`}>
+    <Link className="product-story-media" to={`/products/${product.slug}`} aria-label={`View ${product.name}`}>
+      <ImageSlot src={image} label={media?.alt || product.name} />
+      <span className="product-story-index">{String(index + 1).padStart(2, '0')}</span>
+    </Link>
+    <div className="product-story-copy">
+      <span className="eyebrow">{product.sport} · {product.category}</span>
+      <h2><Link to={`/products/${product.slug}`}>{product.name}</Link></h2>
+      <p>{product.shortDescription || `Explore ${product.name} for ${product.sport?.toLowerCase() || 'sports'} applications. Ask Crome India for the current, project-specific product information.`}</p>
+      <p className="product-story-guidance">Selection depends on the sport, facility, intended use and project specification. Review the confirmed product details, then speak with the team about suitability for your project.</p>
+      {knownSpecs.length > 0 && <ul className="product-story-specs">{knownSpecs.map(spec => <li key={spec}><Check size={15}/>{spec}</li>)}</ul>}
+      <div className="product-story-actions"><Link className="text-link" to={`/products/${product.slug}`}>View product details <ArrowUpRight size={16}/></Link>
+        {onCompare && <label className="compare-choice"><input type="checkbox" checked={selected} disabled={compareDisabled} onChange={onCompare}/> Compare specifications</label>}
+      </div>
+    </div>
+  </Reveal>;
+}
+
+/* â”€â”€ Stagger animation for grid children â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function StaggerGrid({ children, className = '' }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('stagger-revealed');
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.08 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return <div ref={ref} className={`stagger-grid ${className}`}>{children}</div>;
+}
+
+const waLink = (message) => `https://wa.me/${settings.whatsapp}?text=${encodeURIComponent(message)}`;
+function usePageMeta(title,description,structured=null){useEffect(()=>{if(title)document.title=`${title} | Crome India`;if(description){let meta=document.querySelector('meta[name="description"]');if(!meta){meta=document.createElement('meta');meta.name='description';document.head.append(meta)}meta.content=description}let script=document.getElementById('page-structured-data');if(script)script.remove();if(structured){script=document.createElement('script');script.id='page-structured-data';script.type='application/ld+json';script.textContent=JSON.stringify(structured);document.head.append(script)}return()=>{document.getElementById('page-structured-data')?.remove()}},[title,description,JSON.stringify(structured)])}
+function LinkButton({to='/request-quote',children,light=false}){return <Link className={`button ${light?'button-light':'button-primary'}`} to={to}>{children}<ArrowUpRight size={16}/></Link>}
+function Callout({title='Tell us about your project',copy='Share your sport, application and project needs. The Crome India team can help with the next step.',to='/request-quote'}){return <section className="cta-band"><div><span className="eyebrow">LET'S DISCUSS YOUR REQUIREMENT</span><h2>{title}</h2><p>{copy}</p></div><LinkButton to={to}>Start an enquiry</LinkButton></section>}
+
+function HomeEditorialRow({image,alt,eyebrow,title,copy,to,action='Explore',index=0}){
+  const src=image?.url||image;
+  return <Reveal as="article" className={`home-editorial-row${index%2?' is-reversed':''}`}>
+    <Link className="home-editorial-media" to={to} aria-label={`${action}: ${title}`}><ImageSlot src={src} label={image?.alt||alt||title}/><span>{String(index+1).padStart(2,'0')}</span></Link>
+    <div className="home-editorial-copy"><span className="eyebrow">{eyebrow}</span><h3>{title}</h3><p>{copy}</p><Link className="text-link" to={to}>{action}<ArrowUpRight size={16}/></Link></div>
+  </Reveal>;
+}
+
+export function LeadForm({kind='enquiry',product='',sport='',service='',application='',compact=false}){
+  const [busy,setBusy]=useState(false),[result,setResult]=useState(''),[error,setError]=useState('');const location=useLocation();const{items:sportItems}=useApiList('/sports',fallbackSports);
+  async function submit(e){e.preventDefault();setBusy(true);setError('');const form=e.currentTarget;const values=Object.fromEntries(new FormData(form));const params=new URLSearchParams(location.search);Object.assign(values,{requestType:kind,product:values.product||product,sport:values.sport||sport,interestedService:values.interestedService||service,sourcePage:location.pathname,landingPage:location.pathname,referrer:document.referrer,utmSource:params.get('utm_source')||'',utmMedium:params.get('utm_medium')||'',utmCampaign:params.get('utm_campaign')||''});try{const response=await api.post('/leads',values);setResult(response.data.data.reference||'');form.reset()}catch(e){setError(e.response?.data?.message||'We could not send your message right now. Please try again or call Crome India.')}finally{setBusy(false)}}
+  if(result)return <div className="form-success" role="status"><span><Check size={18}/></span><div><h3>Thank you. Your request has been received by Crome India.</h3><p>Reference: {result}. Our team can follow up using the contact details you shared.</p></div></div>;
+  const call=kind==='call';return <form className={`lead-form${compact?' lead-form-compact':''}`} onSubmit={submit}>
+    <div className="form-grid"><label>Name <input name="name" autoComplete="name" required minLength="2" maxLength="100" placeholder="Your name"/></label><label>Company <input name="company" autoComplete="organization" maxLength="140" placeholder="Company or organisation"/></label><label>Phone <input name="phone" type="tel" autoComplete="tel" required={call} maxLength="24" placeholder="Contact number"/></label><label>Email <input name="email" type="email" autoComplete="email" required={!call} maxLength="160" placeholder="you@company.com"/></label><label>City <input name="city" autoComplete="address-level2" maxLength="100" placeholder="Project city"/></label>{!call&&<label>Project type <select name="projectType" defaultValue=""><option value="">Select project type</option>{['Sports facility','School / college','Academy','Sports centre','Installer / contractor','Dealer / procurement','Other'].map(x=><option key={x}>{x}</option>)}</select></label>}
+    {!call&&<label>Sport / application <select name="sport" defaultValue={sport}><option value="">Choose sport or application</option>{sportItems.map(s=><option key={s.slug} value={s.name}>{s.name}</option>)}</select></label>}
+    {!call&&<label>Application detail <input name="application" defaultValue={application} maxLength="140" placeholder="Practice, academy, facility..."/></label>}
+    {!call&&<label>Approximate area <span className="area-input"><input type="number" min="1" name="areaValue" placeholder="e.g. 5000"/><select name="areaUnit" aria-label="Area unit"><option>sq ft</option><option>sq m</option></select></span></label>}
+    {call&&<label>Preferred contact time <input name="preferredContactTime" placeholder="e.g. Weekdays, 10 am-1 pm"/></label>}
+    <label className="form-span">{call?'Requirement':'Product interest'} <input name={call?'interestedService':'product'} defaultValue={call?service:product} placeholder={call?'What would you like to discuss?':'Product or specification, if known'}/></label>
+    <label className="form-span">Message <textarea name="message" required minLength="4" maxLength="2000" rows="4" placeholder="Tell us a little about the project, location, usage or specification you are considering."/></label>
+    <label className="consent-label form-span"><input type="checkbox" name="consent" value="true" required/><span>I agree to be contacted about this enquiry and have read the <Link to="/privacy-policy">Privacy Policy</Link>.</span></label></div>
+    {error&&<p className="form-error" role="alert">{error}</p>}<button className="button button-primary form-submit" disabled={busy}>{busy?'Sending...':call?'Request a call':'Send your enquiry'}<ArrowUpRight size={17}/></button>
+  </form>
+}
+
+export function HomePage(){
+  const {items:allSports}=useApiList('/sports',fallbackSports);
+  const site=useSiteSettings();
+  const uniqueSports=[...new Map(allSports.map(sport=>[String(sport.name||sport.slug).trim().toLowerCase().replace(/[^a-z0-9]/g,''),sport])).values()];
+  const activeSports=uniqueSports.filter(sport=>sport.active!==false).sort((a,b)=>(a.displayOrder??999)-(b.displayOrder??999));
+  const homeSports=activeSports.slice(0,3);
+  return <>
+    <section className="home-hero">
+      <video className="home-hero-video" autoPlay muted loop playsInline preload="metadata" aria-hidden="true" poster={siteImages['home-hero-sports-surface'].url}>
+        <source src="https://res.cloudinary.com/dt37ji5yp/video/upload/v1791313293/Commercial_for_artificial_sports__1080p_20261007002703_gwr_video_mvp_g7jg5w.mp4" type="video/mp4"/>
+      </video>
+      <div className="home-hero-video-shade" aria-hidden="true"/>
+      <div className="home-hero-grid">
+        <div className="home-hero-copy">
+          <span className="eyebrow"><i/> CROME INDIA · SPORTS SURFACES</span>
+          <h1>{site.homeHeroTitle||<>Surfaces built<br/>around <em>the sport.</em></>}</h1>
+          <p>{site.homeHeroCopy||'Premium sports-surface solutions for academies, institutions and sports facilities.'}</p>
+          <div className="hero-actions"><LinkButton to="/sports">Explore sports surfaces</LinkButton><Link className="text-link text-link-light" to="/request-quote">Discuss your project <ArrowRight size={16}/></Link></div>
+          <div className="hero-note"><span className="hero-note-mark"/>APPLICATION <b>→</b> SPECIFICATION <b>→</b> PRODUCT</div>
+        </div>
+      </div>
+      <div className="hero-bottom"><span>SPORTS SURFACES & INFRASTRUCTURE</span><span>Serving key South Indian markets</span><a href="#discover">SCROLL TO EXPLORE <ChevronRight size={14}/></a></div>
+    </section>
+
+    <section id="discover" className="home-editorial-section home-sports-section">
+      <div className="home-editorial-inner"><Reveal><SectionHeading eyebrow="SPORTS SURFACES" title="Choose your sport. Start with the right surface." copy="Explore each application once, then open its page for project details and matching products." link="All sports" to="/sports"/></Reveal>
+        <div className="home-editorial-list">{homeSports.map((sport,index)=><HomeEditorialRow key={sport.slug||sport.name} image={sportImage(sport)} alt={`${sport.name} sports surface`} eyebrow={`SPORTS SURFACE · ${String(index+1).padStart(2,'0')}`} title={sport.name} copy={sport.description||sport.heroSubtitle||`Explore sports-surface options for ${sport.name.toLowerCase()} applications and open the sport page for available product details.`} to={`/sports/${sport.slug}`} action={`Explore ${sport.name}`} index={index}/>)}</div>
+      </div>
+    </section>
+
+    <section className="home-editorial-section home-projects-section" id="projects">
+      <div className="home-editorial-inner"><Reveal><SectionHeading eyebrow="PROJECT GALLERY" title="Sports surfaces, seen in context." copy="A small preview of the image library. Visit the gallery to explore the complete collection." link="Open gallery" to="/gallery"/></Reveal>
+        <div className="home-editorial-list">{projectGalleryItems.slice(0,2).map((item,index)=><HomeEditorialRow key={item._id||item.url} image={item.url} alt={item.altText||item.title} eyebrow={`PROJECT LIBRARY · ${item.category||'SURFACE'}`} title={item.title} copy={item.caption} to="/gallery" action="View in gallery" index={homeSports.length+index}/>)}</div>
+      </div>
+    </section>
+
+    <section className="home-contact-band"><div><span className="eyebrow">YOUR PROJECT, OUR NEXT CONVERSATION</span><h2>Planning a sports surface?</h2><p>Tell us the sport, location and project scope. Our team will help you take the next step.</p></div><div className="home-contact-actions"><LinkButton to="/request-quote">Discuss your project <ArrowUpRight size={16}/></LinkButton><Link className="home-about-link" to="/about">Get to know Crome India <ArrowRight size={15}/></Link><Link className="home-about-link" to="/services">Explore our services <ArrowRight size={15}/></Link></div></section>
+  </>;
+}
+export function SportsPage(){const{items}=useApiList('/sports',fallbackSports);return <><PageHero eyebrow="SPORTS SURFACE SOLUTIONS" title="Start with the sport. Explore the surface." copy="Products are connected to their applications so you can begin with the way the space will be used."/><section className="section"><StaggerGrid className="sport-card-grid sport-card-grid-large">{items.map(s=><SportCard key={s._id||s.slug} sport={s}/>)}</StaggerGrid></section><Callout title="Not sure which surface fits?" to="/find-your-surface" copy="Answer a few questions about your application and browse only products currently in the catalogue."/></>}
+
+export function SportPage(){const{slug}=useParams();const{items:sports}=useApiList('/sports',fallbackSports);const{items:products}=useApiList('/products',fallbackProducts);const sport=sports.find(s=>s.slug===slug)||fallbackSports.find(s=>s.slug===slug);usePageMeta(sport?`${sport.name} Sports Surfaces`:null,sport?`Explore ${sport.name.toLowerCase()} surface applications and available product specifications with Crome India.`:null);if(!sport)return <NotFoundPage/>;const matching=products.filter(p=>String(p.sport).toLowerCase()===sport.name.toLowerCase());return <><Breadcrumbs items={[{label:'Sports',to:'/sports'},{label:sport.name}]}/><PageHero eyebrow="SPORTS SURFACE SOLUTIONS" title={sport.heroTitle||`${sport.name.toUpperCase()} SURFACES`} copy={sport.heroSubtitle||`Explore surface options for ${sport.name.toLowerCase()} applications.`}><LinkButton>Discuss your project</LinkButton></PageHero><section className="section sport-detail-intro"><Reveal><div><span className="eyebrow">APPLICATION FIRST</span><h2>Selected around the specification.</h2><p>{sport.description||`Surface selection for ${sport.name.toLowerCase()} starts with your project type, intended use and site requirements. Share the details with Crome India to discuss the appropriate product information.`}</p></div></Reveal><Reveal delay={100}><div className="considerations"><h3>Consider your project</h3>{['Project type and location','Usage and playing environment','Surface and specification requirements','Area and project timeline'].map(x=><span key={x}><Check size={16}/>{x}</span>)}</div></Reveal></section><section className="section"><Reveal><SectionHeading eyebrow={`${sport.name.toUpperCase()} PRODUCTS`} title={matching.length?`Products for ${sport.name.toLowerCase()}.`:'Discuss surface options with our team.'} copy={matching.length?'Explore the product records currently assigned to this sport.':'No product is currently assigned to this application in the catalogue. Contact Crome India to discuss the requirement.'}/></Reveal>{matching.length?<StaggerGrid className="product-grid">{matching.map(p=><ProductCard key={p._id||p.slug} product={p}/>)}</StaggerGrid>:<LinkButton>Speak with Crome India</LinkButton>}</section>{sport.applications?.length>0&&<section className="application-section"><Reveal><div><span className="eyebrow">APPLICATIONS</span><h2>Where the sport meets the space.</h2></div></Reveal><div className="application-list">{sport.applications.map((x,i)=><span key={x}><b>{String(i+1).padStart(2,'0')}</b>{x}</span>)}</div></section>}<Callout title={`Planning a ${sport.name} facility?`} copy="Tell us about the project, location and application. Our team will follow up on your enquiry."/></>}
+
+export function ProductsPage(){const[searchParams,setSearchParams]=useSearchParams();const{items}=useApiList('/products',fallbackProducts);const{items:categoryItems}=useApiList('/categories',productCategories);const{items:sportItems}=useApiList('/sports',fallbackSports);const[search,setSearch]=useState(''),[compare,setCompare]=useState([]);const category=searchParams.get('category')||'',sport=searchParams.get('sport')||'',mm=searchParams.get('pileHeight')||'';const heights=[...new Set(items.map(p=>Number(p.pileHeightMm)).filter(Boolean))].sort((a,b)=>a-b);const visible=items.filter(p=>(!category||p.category===category)&&(!sport||p.sport.toLowerCase()===sport.toLowerCase())&&(!mm||Number(p.pileHeightMm)===Number(mm))&&(!search||`${p.name} ${p.sport} ${p.category}`.toLowerCase().includes(search.toLowerCase())));const setFilter=(key,value)=>setSearchParams(prev=>{const next=new URLSearchParams(prev);value?next.set(key,value):next.delete(key);return next});const toggle=id=>setCompare(v=>v.includes(id)?v.filter(x=>x!==id):v.length<3?[...v,id]:v);return <><PageHero eyebrow="CROME INDIA PRODUCT CATALOGUE" title="Explore products by sport and specification." copy="Compare the information available for each product. Talk to Crome India for application-specific guidance."/><section className="catalog-toolbar"><label className="search-field"><Search size={17}/><input aria-label="Search products" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search products"/></label><label><Filter size={16}/><select value={category} onChange={e=>setFilter('category',e.target.value)}><option value="">All categories</option>{categoryItems.map(c=><option key={c.slug} value={c.name}>{c.name}</option>)}</select></label><label><SlidersHorizontal size={16}/><select value={sport} onChange={e=>setFilter('sport',e.target.value)}><option value="">All sports</option>{sportItems.map(s=><option key={s.slug} value={s.name}>{s.name}</option>)}</select></label><label><select aria-label="Filter by pile height" value={mm} onChange={e=>setFilter('pileHeight',e.target.value)}><option value="">All pile heights</option>{heights.map(h=><option key={h} value={h}>{h} mm</option>)}</select></label></section><section className="section products-section"><NamedImage name="acrylic-sports-surface"/><p className="result-count">{visible.length} {visible.length===1?'product':'products'}{mm?` Â· ${mm} mm`:''}</p>{visible.length?<div className="product-stories">{visible.map((p,i)=><ProductStoryRow key={p._id||p.slug} product={p} index={i} selected={compare.includes(p._id||p.slug)} compareDisabled={compare.length>=3&&!compare.includes(p._id||p.slug)} onCompare={()=>toggle(p._id||p.slug)}/>)}</div>:<div className="empty-state"><span className="eyebrow">NO MATCHING PRODUCT</span><h2>Let's discuss your application.</h2><p>There is no published product matching these filters. The Crome India team can help review your project needs.</p><LinkButton/></div>}</section>{compare.length===1&&<p className="compare-hint">Choose one more product to compare specifications.</p>}{compare.length>1&&<aside className="compare-dock"><span>{compare.length} of 3 selected</span><a href="#comparison">Compare specifications <ArrowUpRight size={15}/></a><button onClick={()=>setCompare([])}>Clear</button></aside>}{compare.length>1&&<section className="section compare-section" id="comparison"><SectionHeading eyebrow="PRODUCT COMPARISON" title="Compare specifications." copy="Only values entered in the product records are shown."/><div className="compare-grid">{items.filter(p=>compare.includes(p._id||p.slug)).map(p=><article key={p._id||p.slug}><h3>{p.name}</h3><SpecificationList product={p}/></article>)}</div></section>}</>}
+
+export function ProductPage(){const{slug}=useParams();const{items}=useApiList('/products',fallbackProducts);const[remote,setRemote]=useState(null);useEffect(()=>{let live=true;api.get(`/products/${slug}`).then(r=>{if(live)setRemote(r.data.data)}).catch(()=>{});return()=>{live=false}},[slug]);const product=remote||items.find(p=>p.slug===slug);usePageMeta(product?`${product.name} | ${product.sport||'Sports Surface'} Product`:null,product?.seo?.description||product?.shortDescription||null,product?{'@context':'https://schema.org','@type':'Product',name:product.name,description:product.seo?.description||product.shortDescription,category:product.category,brand:product.brand?{'@type':'Brand',name:product.brand}:undefined}:null);if(!product)return <NotFoundPage/>;const image=product.images?.[0]?.url||productImage(product);return <><Breadcrumbs items={[{label:'Products',to:'/products'},{label:product.sport,to:`/sports/${product.sport?.toLowerCase().replace(/\s+/g,'-')}`},{label:product.name}]}/><section className="product-detail-hero"><Reveal className="product-detail-image"><ImageSlot src={image?.url||image} label={image?.alt||product.name}/><span className="image-caption">PRODUCT MEDIA</span></Reveal><Reveal className="product-detail-copy" delay={100}><span className="eyebrow">{product.category||product.sport}</span><h1>{product.name}</h1><p>{product.shortDescription||`Explore the ${product.name} product record and discuss how it may fit your sports-surface requirement.`}</p><div className="product-meta">{product.sport&&<span>{product.sport}</span>}{product.pileHeightMm&&<span>{product.pileHeightMm} mm pile height</span>}</div><div className="hero-actions"><LinkButton to={`/request-quote?product=${encodeURIComponent(product.name)}`}>Request a quote</LinkButton><a className="text-link" href={waLink(`Hello Crome India, I'm interested in ${product.name}. Please share more information.`)} target="_blank" rel="noreferrer" onClick={()=>trackEvent('whatsapp_click',product.name,{product:product.name,sport:product.sport})}><MessageCircle size={16}/> WhatsApp us</a></div></Reveal></section><section className="section product-spec-section"><NamedImage name="turf-macro-detail"/><Reveal><div><span className="eyebrow">PRODUCT SPECIFICATION</span><h2>Product details.</h2><p>Only specifications confirmed in this product record are displayed.</p></div></Reveal><SpecificationList product={product}/></section><EditorialSection eyebrow="PRODUCT GUIDANCE" title="Quality, application and the experience of use." intro="Understand the details that are confirmed, the project factors that shape selection, and the questions worth resolving before specification." items={productEditorial[product.slug]}/><section className="product-help"><span className="eyebrow">NEED HELP SELECTING?</span><h2>Share your application and project requirements.</h2><LinkButton to={`/request-quote?product=${encodeURIComponent(product.name)}`}>Request a recommendation</LinkButton></section><section className="section product-enquiry"><Reveal><div><span className="eyebrow">PRODUCT ENQUIRY</span><h2>Ask us about {product.name}.</h2><p>Send your contact details and project context to the Crome India team.</p></div></Reveal><LeadForm kind="product" product={product.name} sport={product.sport}/></section></>}
+
+export function ServicesPage(){
+  const {items}=useApiList('/services',fallbackServices);
+  const {slug}=useParams();
+  const selected=slug&&items.find(item=>item.slug===slug);
+  const detail=slug&&serviceDetails[slug];
+  usePageMeta(selected?.seo?.title||selected?.title||'Sports Surface Solutions & Services',selected?.seo?.description||selected?.shortDescription||selected?.description||'From understanding the application to selecting the appropriate surface specification.');
+  if(selected){
+    const images=(detail?.imageKeys||[]).map(key=>({key,image:siteImages[key]})).filter(item=>item.image);
+    return <>
+      <Breadcrumbs items={[{label:'Services',to:'/services'},{label:selected.title}]}/>
+      <PageHero eyebrow="CROME INDIA SERVICES" title={selected.title} copy={selected.shortDescription||selected.description}>
+        <LinkButton to={`/request-quote?service=${encodeURIComponent(selected.title)}`}>Discuss this service</LinkButton>
+      </PageHero>
+      <section className="section service-detail-layout">
+        <Reveal className="service-detail-copy">
+          <span className="eyebrow">SERVICE OVERVIEW</span>
+          <h2>{detail?.heading||selected.title}</h2>
+          <p>{selected.fullDescription||detail?.detail||selected.description}</p>
+          {detail?.points?.length>0&&<><h3>What we can discuss</h3><ul>{detail.points.map(point=><li key={point}>{point}</li>)}</ul></>}
+          {selected.applications?.length>0&&<><h3>Applications</h3><ul>{selected.applications.map(item=><li key={item}>{item}</li>)}</ul></>}
+        </Reveal>
+        {images.length>0&&<Reveal className={`service-detail-gallery ${images.length>1?'is-multiple':''}`} delay={100}>
+          {images.map(({key,image})=><figure key={key}><img src={image.url} alt={image.alt} loading="lazy"/><figcaption>{image.alt}</figcaption></figure>)}
+        </Reveal>}
+      </section>
+      <EditorialSection eyebrow="PROJECT GUIDANCE" title="A considered approach to the surface." intro="Useful decisions come from matching the application to confirmed product information and a clear project brief." items={serviceEditorial[slug]}/>
+      <ServiceFAQs items={serviceFaqs[slug]} serviceTitle={selected.title}/>
+      <Callout title={`Discuss ${selected.title.toLowerCase()} with our team`} copy="Share the sport, facility, location and project requirements so the team can respond with relevant information." to="/request-quote"/>
+    </>;
+  }
+  const uniqueServices=[...new Map(items.map(item=>[String(item.slug||item.title).trim().toLowerCase(),item])).values()];
+  return <>
+    <PageHero eyebrow="SPORTS SURFACE SOLUTIONS" title="From application to specification." copy="Explore how Crome India can support your sports-surface project, from an early application discussion to product and supply guidance."/>
+    <section className="home-editorial-section services-editorial-section">
+      <div className="home-editorial-inner">
+        <Reveal><SectionHeading eyebrow="HOW WE CAN SUPPORT" title="Services shaped around your project." copy="Open a service for its details, related surface imagery and the information that helps us respond."/></Reveal>
+        <div className="home-editorial-list">{uniqueServices.map((service,index)=>{
+          const serviceImage=siteImages[serviceDetails[service.slug]?.imageKeys?.[0]]||siteImages['surface-consultation'];
+          return <HomeEditorialRow key={service.slug||service.title} image={serviceImage} alt={serviceImage?.alt||service.title} eyebrow={`CROME INDIA SERVICE · ${String(index+1).padStart(2,'0')}`} title={service.title} copy={service.shortDescription||service.description||'Discuss the requirements for your sports-surface project with Crome India.'} to={`/services/${service.slug}`} action="Explore service" index={index}/>;
+        })}</div>
+      </div>
+    </section>
+    <Callout title="Need product or specification guidance?"/>
+  </>;
+}
+
+export function GalleryPage(){
+  const {items:apiItems, loading} = useApiList('/gallery', []);
+  const items = apiItems.length > 0 ? apiItems : projectGalleryItems;
+  const categories = ['All', ...new Set(items.map(i => i.category).filter(Boolean))];
+  const [category, setCategory] = useState('All');
+  const [lightbox, setLightbox] = useState(null);
+  const visible = items.filter(i => category === 'All' || i.category === category);
+
+  useEffect(() => {
+    if (lightbox === null) return;
+    const handler = (e) => {
+      if (e.key === 'Escape') setLightbox(null);
+      if (e.key === 'ArrowRight') setLightbox(prev => (prev + 1) % visible.length);
+      if (e.key === 'ArrowLeft') setLightbox(prev => (prev - 1 + visible.length) % visible.length);
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handler);
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', handler); };
+  }, [lightbox, visible.length]);
+
+  return <>
+    <PageHero eyebrow="CROME INDIA PROJECT & SURFACE LIBRARY" title="A closer look at sports surfaces." copy="Browse completed project installations, product photographs and surface imagery from Crome India projects across South India."/>
+    <section className="section gallery-page">
+      <div className="gallery-filters">{categories.map(c => <button key={c} className={category === c ? 'active' : ''} onClick={() => setCategory(c)}>{c}</button>)}</div>
+      {loading ? <p>Loading gallery...</p> :
+        <StaggerGrid className="gallery-grid">{visible.map((item, idx) =>
+          <figure key={item._id} className="gallery-figure" onClick={() => setLightbox(idx)} role="button" tabIndex={0} aria-label={`View ${item.title}`}>
+            <img src={item.url || item.thumbnailUrl} alt={item.altText || item.title} loading="lazy" decoding="async"/>
+            <figcaption><b>{item.title}</b><span>{item.caption || item.category}</span></figcaption>
+          </figure>
+        )}</StaggerGrid>
+      }
+    </section>
+    {lightbox !== null && visible[lightbox] && (
+      <div className="gallery-lightbox" onClick={() => setLightbox(null)} role="dialog" aria-label="Image preview">
+        <button className="lightbox-close" onClick={() => setLightbox(null)} aria-label="Close preview">&times;</button>
+        <button className="lightbox-prev" onClick={(e) => { e.stopPropagation(); setLightbox((lightbox - 1 + visible.length) % visible.length); }} aria-label="Previous image">&lsaquo;</button>
+        <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+          <img src={visible[lightbox].url || visible[lightbox].thumbnailUrl} alt={visible[lightbox].altText || visible[lightbox].title}/>
+          <div className="lightbox-caption">
+            <b>{visible[lightbox].title}</b>
+            <p>{visible[lightbox].caption || visible[lightbox].category}</p>
+            <small>{lightbox + 1} / {visible.length}</small>
+          </div>
+        </div>
+        <button className="lightbox-next" onClick={(e) => { e.stopPropagation(); setLightbox((lightbox + 1) % visible.length); }} aria-label="Next image">&rsaquo;</button>
+      </div>
+    )}
+    <Callout title="Have a project to discuss?"/>
+  </>;
+}
+
+export function AboutPage(){
+  const site=useSiteSettings();
+  return <>
+    <PageHero eyebrow="ABOUT CROME INDIA" title="Premium surfaces. Exceptional spaces." copy="Crome India supports sports-surface and sports-infrastructure requirements with application-specific product information and professional enquiry support."/>
+    <section className="home-editorial-section about-editorial-section">
+      <div className="home-editorial-inner">
+        <HomeEditorialRow image={siteImages['project-multisport-facility']} alt="Sports facility surface" eyebrow="OUR APPROACH" title="Surface intelligence starts with specification." copy="Choosing a sports surface begins with understanding how a space will be used. The sport, project type, location and surface requirements help shape the conversation. Our catalogue presents confirmed product information so project teams can take the next step with clarity." to="/sports" action="Explore sports surfaces" index={0}/>
+        <HomeEditorialRow image={siteImages['project-turf-warehouse']} alt="Crome India turf supply and warehouse" eyebrow="CROME INDIA" title="A considered path from application to product." copy="We help project teams explore sports-surface applications, review available specifications and identify the right questions to discuss before a product decision." to="/products" action="Explore the product range" index={1}/>
+      </div>
+    </section>
+    <section className="about-principles">{[['Application','Understand the sport and the intended use of the space.'],['Information','Review confirmed product and specification details.'],['Conversation','Connect project teams with Crome India for a practical next step.']].map(([a,b],i)=><Reveal as="article" key={a} delay={i*80}><b>0{i+1}</b><h3>{a}</h3><p>{b}</p></Reveal>)}</section>
+    <section className="about-locations-band"><div className="about-locations-inner"><div><span className="eyebrow">SOUTH INDIA</span><h2>Connect with Crome India.</h2><p>Serving sports-surface requirements across key South Indian markets.</p><Link className="text-link" to="/contact">Contact our team <ArrowUpRight size={16}/></Link></div><div className="about-location-cards"><article><span className="eyebrow">OFFICE</span><p>{site.office}</p></article><article><span className="eyebrow">WAREHOUSE</span><p>{site.warehouse}</p></article></div></div></section>
+    <Callout/>
+  </>;
+}export function ContactPage({kind='enquiry'}){const site=useSiteSettings(),[params]=useSearchParams();const call=kind==='call',quote=kind==='quote';return <><PageHero eyebrow={call?'REQUEST A CALL':quote?'REQUEST A QUOTE':'CONTACT CROME INDIA'} title={call?'Request a call from our team':quote?'Tell us about your project':'Let\'s discuss your sports-surface requirement.'} copy={call?'Share your phone number, location and a convenient time for a follow-up.':quote?'Provide a few project details to help us understand your sports-surface requirement.':'Reach out to discuss product specifications, applications or a project requirement.'}/><section className="section contact-layout"><Reveal className="contact-details"><NamedImage name="contact-project"/><span className="eyebrow">CROME INDIA</span><h2>Talk with our team.</h2><a className="contact-phone" href={`tel:${(site.phones?.[0]||'9663556752').replace(/\D/g,'')}`}>{site.phones?.[0]||'9663556752'} <ArrowUpRight size={17}/></a><a className="contact-email" href={`mailto:${site.email}`}>{site.email}</a><article><b>Office</b><p>{site.office}</p></article><article><b>Warehouse</b><p>{site.warehouse}</p></article><p className="contact-note">Serving sports-surface requirements across key South Indian markets. Market coverage does not imply local branch offices.</p></Reveal><Reveal className="contact-form-wrap" delay={100}><span className="eyebrow">{call?'CALLBACK DETAILS':'PROJECT DETAILS'}</span><h2>{call?'When should we reach you?':'Send your enquiry.'}</h2><LeadForm kind={call?'call':quote?'quote':'enquiry'} compact product={params.get('product')||''} sport={params.get('sport')||''} service={params.get('service')||''}/></Reveal></section></>}
+
+export function FinderPage(){const{items}=useApiList('/products',fallbackProducts);const{items:sports}=useApiList('/sports',fallbackSports);const[sport,setSport]=useState(''),[application,setApplication]=useState(''),[step,setStep]=useState(1);const apps=[...new Set(items.filter(p=>!sport||p.sport.toLowerCase()===sport.toLowerCase()).flatMap(p=>p.applications||[]))];const choices=apps.length?apps:['Discuss an application with Crome India'];const results=items.filter(p=>(!sport||p.sport.toLowerCase()===sport.toLowerCase())&&(!application||application==='DISCUSS'||p.applications?.some(a=>a.toLowerCase()===application.toLowerCase())));return <><PageHero eyebrow="SURFACE FINDER" title="Find a starting point for your surface conversation." copy="Select your sport and intended application. The finder uses products currently configured in the Crome India catalogue."/><section className="section finder-layout"><Reveal className="finder-form"><span className="eyebrow">STEP {step} OF 2</span><h2>{step===1?'What sport is the project for?':'How will the surface be used?'}</h2>{step===1?<div className="finder-options">{sports.map(s=><button key={s.slug} className={sport===s.name?'selected':''} onClick={()=>{setSport(s.name);setApplication('')}}>{s.name}{sport===s.name&&<Check size={16}/>}</button>)}</div>:<div className="finder-options">{choices.map(x=><button key={x} className={application===x?'selected':''} onClick={()=>setApplication(apps.length?x:'DISCUSS')}>{x}{application===x&&<Check size={16}/>}</button>)}</div>}<div className="finder-controls">{step===2&&<button className="button button-secondary" onClick={()=>setStep(1)}>Back</button>}<button className="button button-primary" disabled={step===1&&!sport} onClick={()=>step===1?setStep(2):document.getElementById('finder-results')?.scrollIntoView({behavior:'smooth'})}>{step===1?'Continue':'See matching products'} <ArrowRight size={16}/></button></div></Reveal><Reveal as="aside" className="finder-note" delay={80}><span className="eyebrow">APPLICATION &rarr; SPECIFICATION &rarr; PRODUCT</span><h3>A recommendation depends on the project.</h3><p>This finder narrows the catalogue by sport and application. It does not determine technical suitability or replace a project discussion.</p></Reveal></section><section id="finder-results" className="section finder-results"><SectionHeading eyebrow="CATALOGUE MATCHES" title={results.length?`${results.length} product${results.length===1?'':'s'} to explore.`:'Talk with Crome India about your project.'} copy={results.length?'These records match the selection you made. Review the available details and ask our team about suitability.':'No current product record matches every selection. The team can discuss surface options for your application.'}/>{results.length?<StaggerGrid className="product-grid">{results.map(p=><ProductCard key={p._id||p.slug} product={p}/>)}</StaggerGrid>:<LinkButton/>}<div className="finder-lead"><h3>Need help assessing the application?</h3><LeadForm kind="product-finder" sport={sport} application={application==='DISCUSS'?'':application}/></div></section></>}
+
+export function LegalPage({kind}){const privacy=kind.toLowerCase().includes('privacy');return <><PageHero eyebrow="CROME INDIA" title={kind} copy={privacy?'How information submitted through this website is used.':'Information about using the Crome India website and product catalogue.'}/><section className="section legal-copy">{privacy?<><h2>Information you choose to share</h2><p>When you submit an enquiry or request a call, this website collects the details you enter, which may include your name, company, phone number, email, city, project type, sport, product interest, approximate area and message. The Crome India team uses these details to understand and respond to your request and to manage related follow-up in its enquiry system.</p><h2>Website interaction events</h2><p>The website records limited interaction events such as selecting WhatsApp, opening the product assistant or choosing an enquiry action. Event records can include the page, destination and the product or sport being viewed. They are not designed to include your name, phone number or email address.</p><h2>Assistant and external services</h2><p>If the Crome Surface Assistant is enabled, your chat messages are sent to the Crome India server and may be processed by its configured AI service to prepare a reply using approved Crome India information. Do not include sensitive personal or financial information in a chat. WhatsApp, telephone and email links open services outside this website; their providers handle information under their own terms.</p><h2>Questions about an enquiry</h2><p>For questions about information you submitted through this website, contact <a href="mailto:sales@cromeindia.com">sales@cromeindia.com</a> or call <a href="tel:+919663556752">+91 96635 56752</a>.</p></>:<><h2>Product information</h2><p>The catalogue presents product details and specifications recorded by Crome India. Missing fields are not implied. Confirm application, specification, pricing, availability and project requirements directly with the team before making procurement decisions.</p><h2>Enquiries and quotations</h2><p>Submitting a form starts an enquiry and does not itself create an order or contract. Any commercial terms, product selection, quantities, scope and timing need confirmation in a written quotation or other agreement from Crome India.</p><h2>Website materials</h2><p>Product names, descriptions and other website materials are provided for exploring Crome India's sports-surface offering. Approved project and product imagery will be added by the Crome India team as available.</p><h2>Contact</h2><p>For questions about the website or a product enquiry, contact <a href="mailto:sales@cromeindia.com">sales@cromeindia.com</a> or call <a href="tel:+919663556752">+91 96635 56752</a>.</p></>}<LinkButton to="/contact">Contact Crome India</LinkButton></section></>}
+export function NotFoundPage(){return <section className="not-found"><span className="eyebrow">404 Â· PAGE NOT FOUND</span><h1>We can't find that page.</h1><p>The link may have changed. Continue exploring Crome India's sports surfaces and solutions.</p><div><LinkButton to="/">Go to homepage</LinkButton><Link className="text-link" to="/sports">Browse sports solutions <ArrowRight size={16}/></Link></div></section>}
+
+export default {HomePage,AboutPage,SportsPage,SportPage,ProductsPage,ProductPage,ServicesPage,GalleryPage,ContactPage,FinderPage,LegalPage,NotFoundPage};
