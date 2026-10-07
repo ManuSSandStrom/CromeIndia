@@ -838,3 +838,9 @@ html.site-motion-ready .hero-image-wrap:after{animation:home-image-sheen 12s 1.8
  .home-hero-video-shade{background:linear-gradient(90deg,rgba(17,15,23,.72),rgba(17,15,23,.45)),linear-gradient(0deg,rgba(17,15,23,.58),rgba(17,15,23,.14) 68%);}
 }
 @media(prefers-reduced-motion:reduce){.home-hero-video{display:none}}
+
+/* Keep mobile fixed controls clear of footer copy and keep the assistant label visible. */
+.assistant-launcher{width:auto!important;min-width:50px!important;padding:0 13px!important;display:flex!important;gap:8px!important;border-radius:999px!important}
+.assistant-launcher-label{display:inline!important;font-size:12px;font-weight:700;white-space:nowrap}
+.intro-video{object-fit:contain!important;object-position:center center!important;background:#11101a}
+@media(max-width:760px){.site-footer .footer-main{padding-bottom:160px}}
