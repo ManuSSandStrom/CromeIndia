@@ -2,7 +2,6 @@ import { Suspense, lazy, useEffect } from 'react';
 import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SiteHeader, SiteFooter, MobileActionBar, ContactBubbles } from './layouts/SiteLayout.jsx';
-import IntroAnimation from './components/IntroAnimation.jsx';
 import ChatAssistant from './components/ChatAssistant.jsx';
 import EnquiryPopup from './components/EnquiryPopup.jsx';
 const page=name=>lazy(()=>import('./pages/Pages.jsx').then(module=>({default:module[name]})));
@@ -65,7 +64,6 @@ function App() {
       </Routes>
     </Suspense></motion.main></AnimatePresence>
     <SiteFooter/><MobileActionBar/><ContactBubbles/><ChatAssistant/><EnquiryPopup/>
-    <IntroAnimation/>
   </>;
 }
 export default App;

@@ -31,11 +31,8 @@ export default function EnquiryPopup() {
         setOpen(true);
       }, 10000);
     };
-    const ready = () => schedule();
-    if (document.documentElement.classList.contains('site-motion-ready')) schedule();
-    else window.addEventListener('crome:intro-complete', ready, { once: true });
+    schedule();
     return () => {
-      window.removeEventListener('crome:intro-complete', ready);
       window.removeEventListener('crome:open-enquiry', openManually);
       window.clearTimeout(promptTimer.current);
     };
