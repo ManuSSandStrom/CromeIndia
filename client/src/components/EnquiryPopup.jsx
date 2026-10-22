@@ -95,7 +95,7 @@ export default function EnquiryPopup() {
     setOpen(false);
   }
 
-  if (!open) return <button className="enquiry-popup-launcher" type="button" onClick={() => { window.clearTimeout(promptTimer.current); sessionStorage.setItem(SEEN_KEY, '1'); setOpen(true); }}><Phone size={17}/><span>Request a call</span></button>;
+  if (!open) return <button className="enquiry-popup-launcher" type="button" aria-label="Request a call" title="Request a call" onClick={() => { window.clearTimeout(promptTimer.current); sessionStorage.setItem(SEEN_KEY, '1'); setOpen(true); }}><Phone size={20}/><span className="sr-only">Request a call</span></button>;
 
   return (
     <div className="enquiry-popup-backdrop" onClick={(event) => event.target === event.currentTarget && close()}>
