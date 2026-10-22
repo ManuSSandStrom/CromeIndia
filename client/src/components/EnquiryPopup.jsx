@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, Phone, X } from 'lucide-react';
+import { ArrowUpRight, Check, Phone, X } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { api } from '../lib/api.js';
 import { siteImages } from '../data/images.js';
+import LottieAnimation from './LottieAnimation.jsx';
 
 const SEEN_KEY = 'ci_enquiry_prompt_seen_v2';
 
@@ -106,7 +107,7 @@ export default function EnquiryPopup() {
         </header>
         {reference ? (
           <div className="enquiry-popup-success" role="status">
-            <span className="enquiry-popup-icon"><Phone size={20}/></span>
+            <LottieAnimation src="/animations/enquiry-success.json" label="Callback request sent" loop={false} className="enquiry-popup-success-animation" fallback={<span className="enquiry-popup-icon"><Check size={20}/></span>}/>
             <span className="eyebrow">REQUEST RECEIVED</span>
             <h2>Thank you. We’ll be in touch.</h2>
             <p>Your callback request is with the Crome India team.</p>
