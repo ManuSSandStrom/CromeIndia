@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, FileText } from 'lucide-react';
 import { productImage, siteImages, sportImage } from '../data/images.js';
-import { serviceDetails } from '../data/content.js';
 
 export function ImageSlot({ src, label = 'Sports surface', className = '' }) {
   return src
@@ -9,17 +8,24 @@ export function ImageSlot({ src, label = 'Sports surface', className = '' }) {
     : <div className={`image-slot ${className}`} role="img" aria-label={`${label} image not yet added`}><span className="image-slot-mark" aria-hidden="true"/><span>{label}</span><small>IMAGE LIBRARY</small></div>;
 }
 
+export function productSummary(product){
+  const description=String(product?.shortDescription||'').trim();
+  if(/^football turf product\. ask crome india for the current specification\.$/i.test(description))return `${product.name} is listed in the football turf range. Ask Crome India to confirm its current specification.`;
+  if(/^compare this specification against the requirements of your application\.$/i.test(description))return `${product.name} is listed with a ${product.pileHeightMm||'recorded'} mm pile height. Request its complete technical details for your project.`;
+  return description||'Contact Crome India for the current product specification.';
+}
+
 export function SectionHeading({ eyebrow, title, copy, action, link, to }) {
   const label = action || link;
   return <div className="section-heading"><div><span className="eyebrow">{eyebrow}</span><h2>{title}</h2></div><div className="section-heading-side">{copy && <p>{copy}</p>}{label && <Link className="text-link" to={to || '/products'}>{label}<ArrowUpRight size={16}/></Link>}</div></div>;
 }
 
-export function ProductCard({ product, selected = false, onCompare, compareDisabled = false }) {
+export function ProductCard({ product, selected = false, onCompare, compareDisabled = false, hideImage = false }) {
   const specs = product.pileHeightMm ? `${product.pileHeightMm} mm pile height` : '';
   const image = product.images?.[0]?.url || productImage(product);
-  return <article className="product-card">
-    <Link className="product-card-image" to={`/products/${product.slug}`}><ImageSlot src={image?.url||image} label={image?.alt||product.name}/><span className="product-image-tag">{product.sport}</span><span className="product-open"><ArrowUpRight size={18}/></span></Link>
-    <div className="product-card-body"><div className="product-card-meta"><span>{product.category}</span>{product.featured && <span className="featured-label">FEATURED</span>}</div><h3><Link to={`/products/${product.slug}`}>{product.name}</Link></h3><p>{product.shortDescription || 'Contact Crome India for the current product specification.'}</p><p className="product-card-guidance">Review the confirmed product details and consider the sport, facility, intended use and project requirements. Ask our team about suitability and current specifications for your application.</p><div className="product-card-footer"><span>{specs || 'Specification on request'}</span><Link to={`/products/${product.slug}`} aria-label={`View ${product.name}`}><ArrowRight size={17}/></Link></div>{onCompare && <label className="compare-choice"><input type="checkbox" checked={selected} disabled={compareDisabled} onChange={onCompare}/> Compare specifications</label>}</div>
+  return <article className={`product-card${hideImage?' is-image-hidden':''}`}>
+    {!hideImage&&<Link className="product-card-image" to={`/products/${product.slug}`}><ImageSlot src={image?.url||image} label={image?.alt||product.name}/><span className="product-image-tag">{product.sport}</span><span className="product-open"><ArrowUpRight size={18}/></span></Link>}
+    <div className="product-card-body"><div className="product-card-meta"><span>{product.category}</span>{product.featured && <span className="featured-label">FEATURED</span>}</div><h3><Link to={`/products/${product.slug}`}>{product.name}</Link></h3><p>{productSummary(product)}</p><div className="product-card-footer"><span>{specs || 'Specification on request'}</span><Link to={`/products/${product.slug}`} aria-label={`View ${product.name}`}><ArrowRight size={17}/></Link></div>{onCompare && <label className="compare-choice"><input type="checkbox" checked={selected} disabled={compareDisabled} onChange={onCompare}/> Compare specifications</label>}</div>
   </article>;
 }
 
@@ -63,13 +69,11 @@ export function PageHero({ eyebrow, title, copy, children, className = '' }) {
   const page = parts[0];
   let image = siteImages['sports-infrastructure-b2b'];
   if (page === 'sports' && parts[1]) image = sportImage({ slug: parts[1] }) || image;
-  else if (page === 'services') {
-    const key = parts[1] ? serviceDetails[parts[1]]?.imageKeys?.[0] : 'surface-consultation';
-    image = siteImages[key] || image;
-  } else if (page === 'products') image = siteImages['turf-rolls-warehouse'];
+  else if (page === 'services') image = siteImages[parts[1] ? 'south-india-sports' : 'sports-arena'];
+  else if (page === 'products') image = siteImages['turf-rolls-warehouse'];
   else if (page === 'gallery') image = siteImages['sports-arena'];
   else if (page === 'about') image = siteImages['south-india-sports'];
-  else if (['contact', 'request-quote', 'request-call'].includes(page)) image = siteImages['contact-project'];
+  else if (['contact', 'request-quote', 'request-call'].includes(page)) image = siteImages['sports-arena'];
   else if (page === 'find-your-surface') image = siteImages['multisport-surface'];
   else if (['privacy-policy', 'terms'].includes(page)) image = siteImages['sports-infrastructure-b2b'];
   const backgroundImage = image?.url ? `url("${image.url}")` : undefined;

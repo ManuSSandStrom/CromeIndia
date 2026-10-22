@@ -30,7 +30,9 @@ export default function AdminSidebar({ onSignOut }) {
     };
   }, [open]);
 
-  return <aside className={`admin-sidebar${open ? ' is-open' : ''}`}>
+  return <>
+    {open && <button type="button" className="admin-nav-backdrop" aria-label="Close admin menu" onClick={() => setOpen(false)}/>}
+    <aside className={`admin-sidebar${open ? ' is-open' : ''}`}>
     <div className="admin-sidebar-head">
       <Link to="/" className="brand" aria-label="Crome India home">
         <span className="brand-space" aria-hidden="true"/><span className="brand-caption">ADMINISTRATION</span>
@@ -39,12 +41,12 @@ export default function AdminSidebar({ onSignOut }) {
         {open ? <X size={18}/> : <Menu size={18}/>}<span>{open ? 'Close menu' : 'Menu'}</span>
       </button>
     </div>
-    {open && <button type="button" className="admin-nav-backdrop" aria-label="Close admin menu" onClick={() => setOpen(false)}/>}
     <nav id="admin-navigation" className="admin-nav" aria-label="Admin navigation">
       <div className="admin-drawer-head"><b>WORKSPACE</b><button type="button" aria-label="Close menu" onClick={() => setOpen(false)}><X size={19}/></button></div>
       {sections.map(({to,label,end}) => <NavLink key={to} to={to} end={end}>{label}</NavLink>)}
       <button type="button" className="admin-mobile-signout" onClick={onSignOut}>Sign out</button>
     </nav>
     <button type="button" className="button button-secondary admin-desktop-signout" onClick={onSignOut}>Sign out</button>
-  </aside>;
+    </aside>
+  </>;
 }

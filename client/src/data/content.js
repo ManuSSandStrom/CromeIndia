@@ -16,15 +16,15 @@ export const sports = [
 
 export const products = [
   { name:'Bellin Prestige', slug:'bellin-prestige', brand:'Bellin', sport:'Football', category:'Football Turf', pileHeightMm:50, shortDescription:'A key football turf in the Crome India range.', highlightText:'The Bellin Prestige football turf series is highly sold in the European market.', featured:true, published:true, displayOrder:0, applications:['Football','Sports facilities'] },
-  { name:'Bellin Prestige Pro', slug:'bellin-prestige-pro', brand:'Bellin', sport:'Football', category:'Football Turf', shortDescription:'Football turf product. Ask Crome India for the current specification.', published:true, displayOrder:1 },
-  { name:'Bellin Prestige Pro Classic', slug:'bellin-prestige-pro-classic', brand:'Bellin', sport:'Football', category:'Football Turf', shortDescription:'Football turf product. Ask Crome India for the current specification.', published:true, displayOrder:2 },
-  { name:'Bellin Prestige Pro Premium', slug:'bellin-prestige-pro-premium', brand:'Bellin', sport:'Football', category:'Football Turf', shortDescription:'Football turf product. Ask Crome India for the current specification.', published:true, displayOrder:3 },
-  { name:'Bellin Diamond', slug:'bellin-diamond', brand:'Bellin', sport:'Football', category:'Football Turf', shortDescription:'Football turf product. Ask Crome India for the current specification.', published:true, displayOrder:4 },
+  { name:'Bellin Prestige Pro', slug:'bellin-prestige-pro', brand:'Bellin', sport:'Football', category:'Football Turf', shortDescription:'A football turf option in the Bellin Prestige range. Ask Crome India for its current technical details.', published:true, displayOrder:1 },
+  { name:'Bellin Prestige Pro Classic', slug:'bellin-prestige-pro-classic', brand:'Bellin', sport:'Football', category:'Football Turf', shortDescription:'A Classic variant in the Bellin Prestige football range. Confirm its current product specification with Crome India.', published:true, displayOrder:2 },
+  { name:'Bellin Prestige Pro Premium', slug:'bellin-prestige-pro-premium', brand:'Bellin', sport:'Football', category:'Football Turf', shortDescription:'A Premium variant in the Bellin Prestige football range. Request the confirmed construction details for your project.', published:true, displayOrder:3 },
+  { name:'Bellin Diamond', slug:'bellin-diamond', brand:'Bellin', sport:'Football', category:'Football Turf', shortDescription:'Bellin football turf model listed in the Crome India catalogue. Ask the team to confirm its current specification.', published:true, displayOrder:4 },
   { name:'Bellin Non Infill', slug:'bellin-non-infill', brand:'Bellin', sport:'Sports turf', category:'Sports Surface', shortDescription:'Surface product. Contact Crome India to discuss its application and current specification.', published:true, displayOrder:5 },
   { name:'Bellin Hockey Supreme', slug:'bellin-hockey-supreme', brand:'Bellin', sport:'Hockey', category:'Hockey Turf', pileHeightMm:18, applications:['Hockey facilities','Sports centres','Institutions'], shortDescription:'Hockey surface product. Ask Crome India for the current specification and approved certification details.', published:true, displayOrder:6 },
   { name:'Cricket Turf', slug:'cricket-turf', brand:'Bellin', sport:'Cricket', category:'Cricket Turf', pileHeightMm:9, applications:['Cricket practice areas','Cricket academies','Sports centres','Schools and institutions','Training facilities'], specifications:{ yarn:'Fibrillated yarn', gauge:'3/16' }, shortDescription:'Cricket turf for practice and related facilities.', published:true, displayOrder:7 },
-  { name:'Multisport Turf 7 mm', slug:'multisport-turf-7-mm', brand:'Bellin', sport:'Multisport', category:'Multisport Turf', pileHeightMm:7, shortDescription:'Compare this specification against the requirements of your application.', published:true, displayOrder:8 },
-  { name:'Multisport Turf 15 mm', slug:'multisport-turf-15-mm', brand:'Bellin', sport:'Multisport', category:'Multisport Turf', pileHeightMm:15, shortDescription:'Compare this specification against the requirements of your application.', published:true, displayOrder:9 },
+  { name:'Multisport Turf 7 mm', slug:'multisport-turf-7-mm', brand:'Bellin', sport:'Multisport', category:'Multisport Turf', pileHeightMm:7, shortDescription:'Listed with a 7 mm pile height. Request the full construction details before comparing it with your project requirements.', published:true, displayOrder:8 },
+  { name:'Multisport Turf 15 mm', slug:'multisport-turf-15-mm', brand:'Bellin', sport:'Multisport', category:'Multisport Turf', pileHeightMm:15, shortDescription:'Listed with a 15 mm pile height. Confirm its complete specification and application guidance with Crome India.', published:true, displayOrder:9 },
 ];
 
 export const services = [
@@ -63,6 +63,6 @@ export const settings = {
   office:'E5, Dhi Innovations, Bannerghatta Road, Venugopal Reddy Layout, Arekere, Bengaluru, Karnataka 560076',
   warehouse:'No. 93/7B, Mylasandra Road, Near GIBS Business School, Akshayanagar, Mylasandra, Karnataka 560114',
   marketCopy:'Serving sports-surface requirements across key South Indian markets.',
-  markets:['Bangalore','Chennai','Hyderabad','Mysore','Coimbatore','Hubballi','Mangalore','Kerala region'],
+  markets:['Chennai','Hyderabad','Mysuru','Coimbatore','Hubballi','Mangaluru','Kerala region'],
   social:{ instagram:'https://www.instagram.com/cromeindia.sports?stkn=OXc2NmhzMHdheHdh', facebook:'', linkedin:'' },
 };

@@ -37,9 +37,9 @@ try {
     {question:'Which sports-surface products are listed by Crome India?',answer:'The current catalogue lists football turf, cricket turf, hockey turf and multisport turf products. Other sports pages are available for project enquiries; products are shown only when assigned in the catalogue.',category:'Products',published:true,displayOrder:0},
     {question:'How do I select a pile height?',answer:'Pile height is one part of a sports-surface specification. The appropriate choice depends on sport, application and project requirements. Contact Crome India for application-specific guidance.',category:'Specifications',published:true,displayOrder:1},
     {question:'What specifications are confirmed for Cricket Turf?',answer:'The current Crome India product record lists 9 mm pile height, fibrillated yarn and 3/16 gauge. Contact the team to confirm other details for your project.',category:'Specifications',published:true,displayOrder:2},
-    {question:'Which locations does Crome India serve?',answer:'Crome India lists Bangalore, Chennai, Hyderabad, Mysore, Coimbatore, Hubballi, Mangalore and the Kerala region as key South Indian markets. These are service markets and do not imply a local branch office.',category:'Company',published:true,displayOrder:3},
+    {question:'Which locations does Crome India serve?',answer:'Crome India lists Chennai, Hyderabad, Mysuru, Coimbatore, Hubballi, Mangaluru and the Kerala region as key South Indian markets. The company is based in Bengaluru. These are service markets and do not imply a local branch office.',category:'Company',published:true,displayOrder:3},
   ];
-  await Promise.all(faqs.map(item=>FAQ.updateOne({question:item.question},{$setOnInsert:item},{upsert:true})));
+  await Promise.all(faqs.map(item=>FAQ.updateOne({question:item.question},item.question==='Which locations does Crome India serve?'?{$set:item}:{$setOnInsert:item},{upsert:true})));
   await SiteSettings.updateOne({key:'main'},{$set:{data:settings}},{upsert:true});
   console.info(`Starter catalogue ready: ${products.length} products, ${productCategories.length} categories, ${sports.length} sports, ${services.length} services. No sample gallery photos were added.`);
 } finally {
