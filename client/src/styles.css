@@ -1015,6 +1015,31 @@ html.site-motion-ready .hero-image-wrap:after{animation:home-image-sheen 12s 1.8
 .intro-video{object-fit:contain!important;object-position:center center!important;background:#11101a}
 @media(max-width:760px){.site-footer .footer-main{padding-bottom:160px}}
 
+/* Keep hero actions and persistent contact controls inside the viewport. */
+.home-hero-grid,.home-hero-copy{min-width:0}
+.home-hero .hero-actions>*{max-width:100%;min-width:0}
+.home-hero .hero-note{max-width:100%;flex-wrap:wrap;row-gap:7px;line-height:1.5}
+.assistant-widget{right:24px!important;left:auto!important;top:auto!important;bottom:88px!important;z-index:72}
+.enquiry-popup-launcher{right:24px!important;left:auto!important;bottom:24px!important;min-height:48px!important;padding:0 18px!important}
+@media(max-width:760px){
+ .home-hero-grid{width:min(calc(100% - 40px),620px);min-height:auto}
+ .home-hero-copy{padding:clamp(42px,8svh,64px) 0 34px}
+ .home-hero .hero-actions{display:grid;grid-template-columns:minmax(0,1fr);width:100%;gap:10px;margin-top:22px}
+ .home-hero .hero-actions .button,.home-hero .hero-actions .text-link{width:100%;max-width:100%;min-height:50px;box-sizing:border-box;justify-content:center}
+ .home-hero .hero-note{margin-top:26px;gap:7px;font-size:clamp(8px,2.2vw,10px);letter-spacing:.04em}
+ .assistant-widget{right:14px!important;left:auto!important;bottom:calc(82px + env(safe-area-inset-bottom))!important}
+ .enquiry-popup-launcher{right:14px!important;left:auto!important;bottom:calc(16px + env(safe-area-inset-bottom))!important;min-height:48px!important;padding:0 16px!important;font-size:12px!important}
+ .assistant-launcher{height:48px!important;min-height:48px!important;width:auto!important;min-width:48px!important;padding:0 13px!important;display:flex!important;gap:8px!important;border-radius:999px!important}
+}
+@media(max-width:390px){
+ .home-hero-grid{width:calc(100% - 32px)}
+ .home-hero-copy{padding-top:38px}
+ .home-hero h1{font-size:clamp(42px,12vw,54px);overflow-wrap:anywhere}
+ .home-hero .hero-note{font-size:8px}
+ .assistant-launcher-label{display:none!important}
+ .assistant-launcher{width:48px!important;padding:0!important;justify-content:center!important}
+}
+
 /* Apply the Crome India navy, red and ice-blue palette across every page. */
 :root{--navy:#073779;--navy-dark:#061C3D;--navy-mid:#1B4F91;--red:#ED1235;--red-dark:#C80F2E;--red-light:#FCE9ED;--blue:#073779;--green:#ED1235;--pale:#F1F6FC;--pale-warm:#F1F6FC;--line:#E2E8F0;--muted:#243247;--shadow-sm:0 2px 8px rgba(6,28,61,.10);--shadow-md:0 8px 28px rgba(6,28,61,.14);--shadow-lg:0 20px 55px rgba(6,28,61,.18);--shadow-red:0 8px 28px rgba(237,18,53,.20)}
 body{color:#243247}
