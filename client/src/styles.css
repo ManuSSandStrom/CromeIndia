@@ -1161,3 +1161,20 @@ body{color:#243247}
  .assistant-widget,.enquiry-popup-launcher{animation:none!important}
  .assistant-launcher,.assistant-launcher svg,.enquiry-popup-launcher,.enquiry-popup-launcher svg{transition:none!important}
 }
+
+/* Final contact-control layout: fixed left icon stack clear of the mobile action bar. */
+.assistant-widget{position:fixed!important;z-index:92!important;left:24px!important;right:auto!important;top:min(649px,calc(100vh - 120px))!important;bottom:auto!important}
+.assistant-launcher{box-sizing:border-box!important;display:grid!important;width:50px!important;min-width:50px!important;height:50px!important;min-height:50px!important;flex:0 0 50px!important;place-items:center!important;padding:0!important;border:2px solid #fff!important;border-radius:50%!important;background:#073779!important;color:#fff!important;box-shadow:0 5px 18px rgba(6,28,61,.24)!important}
+.assistant-launcher-label{display:none!important}
+.assistant-launcher:after{content:none!important}
+.assistant-launcher:hover{transform:translateY(-2px) scale(1.04)!important;background:#061C3D!important}
+.assistant-panel{top:auto!important;right:auto!important;bottom:58px!important;left:0!important;width:min(350px,calc(100vw - 48px))!important;border-radius:12px!important;overflow:hidden}
+.enquiry-popup-launcher{position:fixed!important;z-index:92!important;left:24px!important;right:auto!important;top:min(707px,calc(100vh - 62px))!important;bottom:auto!important;box-sizing:border-box!important;display:grid!important;width:50px!important;min-width:50px!important;height:50px!important;min-height:50px!important;place-items:center!important;gap:0!important;padding:0!important;border:2px solid #fff!important;border-radius:50%!important;background:#ED1235!important;color:#fff!important;box-shadow:0 5px 18px rgba(6,28,61,.24)!important;font-size:0!important}
+.enquiry-popup-launcher svg{width:20px;height:20px;color:#fff!important}
+.enquiry-popup-launcher:hover{transform:translateY(-2px) scale(1.04)!important;background:#C80F2E!important}
+@media(max-width:760px){
+ .assistant-widget{left:14px!important;right:auto!important;top:auto!important;bottom:calc(136px + env(safe-area-inset-bottom))!important}
+ .assistant-panel{left:0!important;right:auto!important;bottom:58px!important;width:min(350px,calc(100vw - 28px))!important}
+ .enquiry-popup-launcher{left:14px!important;right:auto!important;top:auto!important;bottom:calc(78px + env(safe-area-inset-bottom))!important}
+}
+@media(prefers-reduced-motion:reduce){.assistant-widget,.enquiry-popup-launcher{animation:none!important}}
