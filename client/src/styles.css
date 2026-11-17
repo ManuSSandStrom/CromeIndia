@@ -1178,3 +1178,138 @@ body{color:#243247}
  .enquiry-popup-launcher{left:14px!important;right:auto!important;top:auto!important;bottom:calc(78px + env(safe-area-inset-bottom))!important}
 }
 @media(prefers-reduced-motion:reduce){.assistant-widget,.enquiry-popup-launcher{animation:none!important}}
+
+/* Admin workspace responsive polish: clearer desktop canvas, mobile drawer and lead cards. */
+.admin-page{grid-template-columns:260px minmax(0,1fr);background:#F1F6FC;color:#243247}
+.admin-page>section{box-sizing:border-box;width:100%;max-width:1720px;justify-self:center;padding:clamp(30px,4vw,54px) clamp(24px,4vw,64px) 56px}
+.admin-sidebar{box-sizing:border-box;z-index:40;padding:28px 18px 22px}
+.admin-sidebar-head{min-height:50px}
+.admin-nav{gap:5px}
+.admin-nav>a{display:flex;align-items:center;min-height:46px;padding:0 14px;border-radius:9px}
+.admin-nav>a:focus-visible,.admin-menu-toggle:focus-visible,.admin-export:focus-visible,.admin-refresh:focus-visible{outline:3px solid rgba(237,18,53,.5);outline-offset:2px}
+.admin-title{align-items:center}
+.admin-title>div{min-width:0}
+.admin-title h1{overflow-wrap:anywhere}
+.metric-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.metric-grid article{min-width:0;min-height:82px;padding:16px;border-radius:12px}
+.metric-grid small{font-size:10px;line-height:1.35}
+.admin-filters{align-items:center}
+.admin-filters>*{min-width:0}
+.admin-search{display:flex;align-items:center;gap:9px;min-height:44px;padding:0 12px}
+.admin-search input{width:100%;min-width:0;height:42px;font-size:14px}
+.lead-table{min-width:0;overflow-x:auto;overscroll-behavior-x:contain}
+.lead-row>span,.lead-contact{min-width:0;overflow-wrap:anywhere}
+.cms-list,.cms-form,.settings-row,.lead-table{border-radius:12px}
+.cms-form{gap:16px;padding:24px}
+.cms-form label{min-width:0;line-height:1.4}
+.cms-form input:not([type=checkbox]):not([type=file]),.cms-form textarea{box-sizing:border-box;min-height:44px;padding:10px 12px;font-size:14px}
+.cms-form textarea{min-height:86px}
+.cms-form>.button{min-height:46px}
+.cms-actions button{min-width:40px;min-height:40px}
+
+@media(max-width:1050px){
+ .admin-page{grid-template-columns:220px minmax(0,1fr)}
+ .metric-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .admin-page>section{padding-right:clamp(20px,3vw,36px);padding-left:clamp(20px,3vw,36px)}
+}
+@media(max-width:900px){
+ .admin-page{display:block;min-height:100dvh}
+ .admin-sidebar{position:sticky;top:0;z-index:100;width:100%;height:72px;padding:10px 18px;border-bottom:1px solid #D9E2ED;background:#fff;box-shadow:0 3px 14px rgba(6,28,61,.08)}
+ .admin-sidebar-head{min-height:50px}
+ .admin-sidebar-head .brand{margin:0}
+ .admin-sidebar-head .brand-space{width:32px;height:32px}
+ .admin-sidebar-head .brand-caption{font-size:10px;color:#073779}
+ .admin-menu-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:96px;min-height:44px;padding:0 13px;border:1px solid #D9E2ED;border-radius:9px;background:#fff;color:#073779;font-size:13px;font-weight:700}
+ .admin-nav{display:none}
+ .admin-desktop-signout{display:none}
+ .admin-nav-backdrop{position:fixed;inset:0;z-index:101;display:block;width:100%;height:100%;border:0;background:rgba(6,28,61,.46);backdrop-filter:blur(3px)}
+ .admin-sidebar.is-open{position:fixed;inset:0 auto 0 0;display:flex;width:min(360px,calc(100vw - 40px));height:100dvh;padding:18px 16px calc(16px + env(safe-area-inset-bottom));border:0;border-radius:0 16px 16px 0;background:#061C3D;color:#fff;box-shadow:16px 0 48px rgba(6,28,61,.24);gap:16px;overflow:hidden}
+ .admin-sidebar.is-open .admin-sidebar-head{flex:0 0 52px;min-height:52px;padding:0 2px 12px;border-bottom:1px solid rgba(255,255,255,.14)}
+ .admin-sidebar.is-open .brand-caption,.admin-sidebar.is-open .brand{color:#fff}
+ .admin-sidebar.is-open .admin-menu-toggle{min-width:44px;width:44px;padding:0;border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:#fff}
+ .admin-sidebar.is-open .admin-menu-toggle span{display:none}
+ .admin-sidebar.is-open .admin-nav{position:static;display:flex;flex:1;min-height:0;flex-direction:column;gap:5px;overflow-y:auto;overscroll-behavior:contain;padding:0 2px 10px;background:transparent;box-shadow:none}
+ .admin-sidebar.is-open .admin-nav>a{flex:0 0 auto;min-height:48px;padding:0 14px;border:0;border-radius:9px;color:rgba(255,255,255,.82);font-size:14px}
+ .admin-sidebar.is-open .admin-nav>a.active,.admin-sidebar.is-open .admin-nav>a:hover{background:rgba(255,255,255,.1);color:#fff;box-shadow:inset 3px 0 #ED1235}
+ .admin-sidebar.is-open .admin-drawer-head{display:flex;flex:0 0 auto;align-items:center;justify-content:space-between;padding:8px 12px 10px;color:#B8C8DC;font-size:10px;font-weight:800;letter-spacing:.14em}
+ .admin-sidebar.is-open .admin-drawer-head button{display:none}
+ .admin-sidebar.is-open .admin-mobile-signout{display:block;flex:0 0 auto;min-height:48px;margin:0;padding:0 14px;border:1px solid rgba(255,255,255,.17);border-radius:9px;background:rgba(255,255,255,.07);color:#fff;text-align:left;font-weight:650}
+ .admin-page>section{max-width:none;padding:30px clamp(20px,4vw,36px) calc(48px + env(safe-area-inset-bottom))}
+}
+@media(max-width:700px){
+ .admin-page>section{padding:25px 16px calc(38px + env(safe-area-inset-bottom))}
+ .admin-page>section>.eyebrow{font-size:9px;letter-spacing:.13em}
+ .admin-title{align-items:stretch;flex-direction:column;gap:12px;margin:12px 0 20px}
+ .admin-title h1{margin:8px 0 5px;font-size:clamp(29px,8vw,36px);line-height:1.08}
+ .admin-title p{font-size:13px;line-height:1.5}
+ .admin-export{width:100%;min-height:46px;justify-content:center;border-radius:10px;font-size:13px}
+ .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:18px 0}
+ .metric-grid article{min-height:76px;padding:12px;border-radius:10px;gap:7px}
+ .metric-grid small{font-size:10px}
+ .metric-grid strong{font-size:22px}
+ .admin-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:16px 0}
+ .admin-filters .admin-search,.admin-filters input[placeholder="Sport / product / service"]{grid-column:1/-1}
+ .admin-filters input,.admin-filters select,.admin-refresh{width:100%;min-width:0;min-height:46px;box-sizing:border-box;border-radius:9px;font-size:16px}
+ .admin-refresh{justify-content:center}
+ .lead-table{display:grid;gap:0;overflow:visible;border:0;border-radius:0;background:transparent;box-shadow:none}
+ .lead-header{display:none}
+ .lead-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,.65fr);gap:12px;min-width:0;margin:0 0 11px;padding:15px 14px;border:1px solid #E2E8F0;border-radius:12px;background:#fff;box-shadow:0 3px 12px rgba(6,28,61,.04);font-size:12px}
+ .lead-row .lead-contact{grid-column:1/-1;width:100%;padding:0 0 12px;border:0;border-bottom:1px solid #E8EDF3;text-align:left}
+ .lead-contact b{font-size:14px}
+ .lead-contact small{font-size:11px;line-height:1.45}
+ .lead-row>span{align-self:start;font-size:12px;line-height:1.5}
+ .lead-row>span:nth-of-type(1),.lead-row>span:nth-of-type(2){grid-column:1/-1}
+ .lead-row>span:nth-of-type(1)::before,.lead-row>span:nth-of-type(2)::before,.lead-row>span:nth-of-type(3)::before{display:block;margin:0 0 4px;color:#64748B;font-size:9px;font-weight:750;letter-spacing:.1em}
+ .lead-row>span:nth-of-type(1)::before{content:'PROJECT'}
+ .lead-row>span:nth-of-type(2)::before{content:'ENQUIRY'}
+ .lead-row>span:nth-of-type(3)::before{content:'RECEIVED'}
+ .lead-row>span small{font-size:10px;line-height:1.45}
+ .lead-row select{align-self:end;width:100%;min-width:0;min-height:42px;border-radius:8px;font-size:13px}
+ .empty-leads{padding:18px;border:1px solid #E2E8F0;border-radius:12px;background:#fff}
+ .admin-footnote{font-size:11px;line-height:1.55}
+ .cms-form{grid-template-columns:minmax(0,1fr);gap:14px;margin:16px 0;padding:16px;border-radius:12px}
+ .cms-form-head,.cms-form>.button,.upload-control{grid-column:1}
+ .cms-form-head{min-height:44px}
+ .cms-form label{font-size:12px}
+ .cms-form input:not([type=checkbox]):not([type=file]),.cms-form textarea{min-height:46px;font-size:16px}
+ .cms-form textarea{min-height:88px}
+ .cms-form>.button{width:100%;min-height:48px;justify-content:center}
+ .cms-list{display:grid;gap:10px;border:0;background:transparent;box-shadow:none}
+ .cms-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;margin:0;padding:14px;border:1px solid #E2E8F0!important;border-radius:11px;background:#fff;box-shadow:0 3px 12px rgba(6,28,61,.04)}
+ .cms-row>img{grid-column:1/-1;width:100%;height:auto;max-height:220px;aspect-ratio:16/9;border-radius:8px}
+ .cms-row>div:first-of-type{grid-column:1/-1;min-width:0}
+ .cms-row>div:first-of-type b{font-size:14px;line-height:1.4}
+ .cms-row small{font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+ .cms-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;margin:0;justify-content:flex-start}
+ .cms-actions button{min-width:44px;min-height:44px;padding:0 12px;border-radius:8px;font-size:12px}
+ .settings-row{display:flex;flex-wrap:wrap;gap:10px;padding:15px;font-size:13px;line-height:1.5}
+ .settings-row span{font-size:12px}
+ .lead-detail-backdrop{align-items:flex-end;padding:0}
+ .lead-detail-panel{width:100%;height:min(92dvh,900px);overflow-y:auto;border-radius:16px 16px 0 0;padding:20px 16px calc(22px + env(safe-area-inset-bottom))}
+ .lead-detail-data>div{grid-template-columns:minmax(86px,.35fr) minmax(0,1fr);gap:10px;font-size:12px;overflow-wrap:anywhere}
+ .lead-detail-panel>label{font-size:12px}
+ .lead-detail-panel input,.lead-detail-panel textarea{min-height:46px;box-sizing:border-box;font-size:16px}
+ .lead-detail-panel>.button{width:100%;min-height:48px;justify-content:center}
+ .admin-login{padding:18px}
+ .admin-login form{padding:24px 20px;border-radius:14px}
+ .admin-login input{min-height:48px;font-size:16px}
+}
+@media(max-width:360px){
+ .metric-grid{gap:7px}
+ .metric-grid article{padding:10px}
+ .metric-grid small{font-size:9px}
+ .admin-filters{grid-template-columns:minmax(0,1fr)}
+ .admin-filters .admin-search,.admin-filters input[placeholder="Sport / product / service"]{grid-column:1}
+ .lead-row{grid-template-columns:minmax(0,1fr) minmax(95px,.6fr);padding:13px 11px}
+ .admin-sidebar-head .brand-caption{font-size:9px}
+}
+
+/* ── Route loading spinner + error boundary (added for resilient UX) ───────── */
+.route-loading{gap:12px;flex-direction:column}
+.route-loading-spinner{width:30px;height:30px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--blue);animation:route-spin .7s linear infinite}
+@keyframes route-spin{to{transform:rotate(360deg)}}
+.error-boundary{min-height:62vh;max-width:620px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:14px;padding:48px 24px}
+.error-boundary h1{font-size:clamp(26px,4vw,38px);line-height:1.12;color:var(--navy)}
+.error-boundary p{color:var(--muted);font-size:15px;max-width:48ch}
+.error-boundary-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+@media(prefers-reduced-motion:reduce){.route-loading-spinner{animation-duration:1.2s}}

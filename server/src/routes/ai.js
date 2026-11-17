@@ -6,7 +6,7 @@ import FAQ from '../models/FAQ.js';
 import SiteSettings from '../models/SiteSettings.js';
 import { products as fallbackProducts, sports as fallbackSports, services as fallbackServices, settings as fallbackSettings } from '../../../client/src/data/content.js';
 
-export const CONTACT_HANDOFF = 'I can help with questions about Crome India’s sports surfaces and project enquiries. For other questions, I can connect you with our team at sales@cromeindia.com or +91 96635 56752.';
+export const CONTACT_HANDOFF = 'I can help with questions about Crome India’s sports surfaces and project enquiries. For other questions, I can connect you with our team at info@cromeindiagroup.com or +91 96635 56752.';
 const topicPattern = /\b(crome(?:\s+india)?|sport(?:s)?|cricket|surface(?:s)?|facility|facilities|infrastructure|practice|academy|project|quote|quotation|price|pricing|cost|install(?:ation)?|training|school|college|club|stadium|synthetic|flooring|service|contact|phone|email|office|bengaluru|bangalore|hyderabad|callback|consultation|whats\s*app|instagram|turf|court|track|pitch|enquiry|inquiry|venue|construction|development|team|company|business|specification|football|hockey|tennis|badminton|squash|multisport|athletic|gym|pile\s*height|gauge|yarn|dtex|backing|infill|warranty|guarantee|certification|certified|availability|stock|delivery|lead\s*time|maintenance|product|catalog(?:ue)?|select|selection|recommend(?:ation)?|range|application|area|location|timeline)\b/i;
 const unrelatedPattern = /\b(weather|stock market|scores?|who won|latest news|recipe|translate|translation|politics|movie|movies|joke|song|capital of|population of|homework|math problem|write code|debug code)\b/i;
 export function isCromeQuestion(text = '') { return topicPattern.test(text) && !unrelatedPattern.test(text); }
@@ -29,15 +29,15 @@ export async function buildApprovedContext(){
     faqs=[];
   }
   const d=settingsRecord?.data||fallbackSettings;
-  const company={name:d.companyName||'Crome India',category:d.category||'Sports Surfaces / Sports Infrastructure',email:d.email||'sales@cromeindia.com',phones:d.phones?.length?d.phones:['9663556752'],office:d.office||'E5, Dhi Innovations, Bannerghatta Road, Venugopal Reddy Layout, Arekere, Bengaluru, Karnataka 560076',warehouse:d.warehouse||'No. 93/7B, Mylasandra Road, Near GIBS Business School, Akshayanagar, Mylasandra, Karnataka 560114',markets:d.markets||['Bangalore','Chennai','Hyderabad','Mysore','Coimbatore','Hubballi','Mangalore','Kerala region']};
+  const company={name:d.companyName||'Crome India',category:d.category||'Sports Surfaces / Sports Infrastructure',email:d.email||'info@cromeindiagroup.com',phones:d.phones?.length?d.phones:['9663556752'],office:d.office||'E5, Dhi Innovations, Bannerghatta Road, Venugopal Reddy Layout, Arekere, Bengaluru, Karnataka 560076',warehouse:d.warehouse||'No. 93/7B, Mylasandra Road, Near GIBS Business School, Akshayanagar, Mylasandra, Karnataka 560114',markets:d.markets||['Bangalore','Chennai','Hyderabad','Mysore','Coimbatore','Hubballi','Mangalore','Kerala region']};
   return JSON.stringify({company,marketsNote:'These are service markets, not confirmed branch offices.',products,sports,services,faqs});
 }
 export function approvedFallbackReply(question, context){
   let approved;
   try { approved = JSON.parse(context); } catch { return CONTACT_HANDOFF; }
   const text=String(question||'').toLowerCase();
-  if(/\b(quote|quotation|price|pricing|cost|estimate|budget)\b/.test(text))return 'For a project-specific quote, share the sport, location, approximate area and intended use. The team can confirm pricing and availability. Contact sales@cromeindia.com or +91 96635 56752, or send a project enquiry through the website.';
-  if(/\b(install|installation|maintenance|warranty|guarantee|delivery|stock|availability|lead time|certification|certified)\b/.test(text))return 'That detail is not confirmed in the current catalogue. Other technical details are not confirmed either. Contact sales@cromeindia.com or +91 96635 56752 to discuss the requirement, or send a project enquiry through the website.';
+  if(/\b(quote|quotation|price|pricing|cost|estimate|budget)\b/.test(text))return 'For a project-specific quote, share the sport, location, approximate area and intended use. The team can confirm pricing and availability. Contact info@cromeindiagroup.com or +91 96635 56752, or send a project enquiry through the website.';
+  if(/\b(install|installation|maintenance|warranty|guarantee|delivery|stock|availability|lead time|certification|certified)\b/.test(text))return 'That detail is not confirmed in the current catalogue. Other technical details are not confirmed either. Contact info@cromeindiagroup.com or +91 96635 56752 to discuss the requirement, or send a project enquiry through the website.';
   const product=(approved.products||[]).find(item=>item.name&&text.includes(item.name.toLowerCase()));
   if(product){
     const facts=[];
@@ -64,7 +64,7 @@ export function approvedFallbackReply(question, context){
   if(/\b(school|college|academy|club|stadium|sports centre|sports center|facility|facilities)\b/.test(text))return 'Crome India supports sports facilities, schools, colleges, academies and clubs. The right product depends on the sport and intended use. Which sport is the project for?';
   if(/where|location|market|serve|service area/.test(text)){
     const locations=approved.company?.markets;
-    if(Array.isArray(locations)&&locations.length)return `Crome India serves ${locations.join(', ')}. These are service markets, not confirmed branch offices. Contact sales@cromeindia.com or +91 96635 56752 to discuss your location.`;
+    if(Array.isArray(locations)&&locations.length)return `Crome India serves ${locations.join(', ')}. These are service markets, not confirmed branch offices. Contact info@cromeindiagroup.com or +91 96635 56752 to discuss your location.`;
   }
   return CONTACT_HANDOFF;
 }

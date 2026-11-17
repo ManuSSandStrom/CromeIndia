@@ -10,7 +10,7 @@ describe('Crome India assistant guardrails', () => {
   it('routes unrelated requests directly to Crome India contact details', () => {
     assert.equal(isCromeQuestion('Can you explain the stock market?'), false);
     assert.equal(isCromeQuestion('Who won the cricket match?'), false);
-    assert.match(CONTACT_HANDOFF, /sales@cromeindia\.com/);
+    assert.match(CONTACT_HANDOFF, /info@cromeindiagroup\.com/);
     assert.match(CONTACT_HANDOFF, /\+91 96635 56752/);
   });
   it('requires a configured Gemini key', async () => {
@@ -31,6 +31,6 @@ describe('Crome India assistant guardrails', () => {
     assert.match(approvedFallbackReply('What are Cricket Turf specifications?',context),/9 mm pile height, Fibrillated yarn, 3\/16/);
     assert.match(approvedFallbackReply('Where does Crome India serve?',context),/not confirmed branch offices/);
     assert.match(approvedFallbackReply('What warranty do you offer for Bellin Prestige?',context),/Other technical details are not confirmed/);
-    assert.match(approvedFallbackReply('What is the cost of a football turf?',context),/sales@cromeindia\.com/);
+    assert.match(approvedFallbackReply('What is the cost of a football turf?',context),/info@cromeindiagroup\.com/);
   });
 });

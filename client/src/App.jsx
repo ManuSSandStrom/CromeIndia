@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { SiteHeader, SiteFooter, MobileActionBar, ContactBubbles } from './layouts/SiteLayout.jsx';
 import ChatAssistant from './components/ChatAssistant.jsx';
 import EnquiryPopup from './components/EnquiryPopup.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 const page=name=>lazy(()=>import('./pages/Pages.jsx').then(module=>({default:module[name]})));
 const HomePage=page('HomePage'),AboutPage=page('AboutPage'),SportsPage=page('SportsPage'),SportPage=page('SportPage');
 const ProductsPage=page('ProductsPage'),ProductPage=page('ProductPage'),ServicesPage=page('ServicesPage'),GalleryPage=page('GalleryPage');
@@ -17,10 +18,10 @@ function App() {
   useEffect(() => {
     const path = location.pathname;
     const seo = {
-      '/':{ title:'Premium Sports Surfaces & Sports Infrastructure', desc:'Premium sports-surface solutions from Crome India. Explore football, cricket, hockey and multisport products, review specifications and discuss your project.' },
-      '/about':{ title:'About Crome India', desc:'Crome India supports sports-surface and sports-infrastructure requirements with application-specific product information and professional enquiry support.' },
-      '/sports':{ title:'Sports Surface Solutions', desc:'Explore sports applications and review surface products configured in the Crome India catalogue for football, cricket, hockey, tennis and multisport.' },
-      '/products':{ title:'Sports Surface Products', desc:'Review Crome India product records and compare available factual specifications for football, cricket, hockey and multisport surfaces.' },
+      '/':{ title:'Premium Sports Turf & Surfaces', desc:'Premium sports turf and surfaces from Crome India — football turf, cricket turf, hockey turf, multisport and artificial grass turf. Explore specifications and discuss your project across Bangalore and South India.' },
+      '/about':{ title:'About Crome India', desc:'Crome India supports sports turf, sports-surface and sports-infrastructure requirements with application-specific product information and professional enquiry support.' },
+      '/sports':{ title:'Sports Turf & Surface Solutions', desc:'Explore turf and surface options by sport — football turf, cricket turf, hockey turf, tennis and multisport surfaces configured in the Crome India catalogue.' },
+      '/products':{ title:'Sports Turf & Surface Products', desc:'Browse Crome India turf and surface products and compare factual specifications for football turf, cricket turf, hockey and multisport surfaces.' },
       '/services':{ title:'Sports Surface Solutions & Services', desc:'From understanding the application to selecting the appropriate surface specification. Explore Crome India service areas.' },
       '/gallery':{ title:'Sports Surface Gallery', desc:'Browse approved project, product and surface images added by the Crome India team across completed installations.' },
       '/contact':{ title:'Contact Crome India', desc:'Contact Crome India to discuss your sports-surface requirement. Call, email or submit an enquiry form.' },
@@ -42,16 +43,16 @@ function App() {
       if (ogDesc) ogDesc.content = page.desc;
       let ogUrl = document.querySelector('meta[property="og:url"]');
       if (!ogUrl) { ogUrl = document.createElement('meta'); ogUrl.setAttribute('property','og:url'); document.head.append(ogUrl); }
-      ogUrl.content = `https://www.cromeindia.com${path}`;
+      ogUrl.content = `https://www.cromeindiagroup.com${path}`;
     }
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.append(canonical); }
-    canonical.href = `https://www.cromeindia.com${path}`;
+    canonical.href = `https://www.cromeindiagroup.com${path}`;
   }, [location.pathname]);
-  if (isAdmin) return <Suspense fallback={<div className="route-loading">Loading administration…</div>}><Routes><Route path="/admin" element={<AdminCRM/>}/><Route path="/admin/login" element={<AdminCRM/>}/><Route path="/admin/*" element={<AdminContent/>}/></Routes></Suspense>;
+  if (isAdmin) return <ErrorBoundary><Suspense fallback={<div className="route-loading"><span className="route-loading-spinner" aria-hidden="true"/>Loading administration…</div>}><Routes><Route path="/admin" element={<AdminCRM/>}/><Route path="/admin/login" element={<AdminCRM/>}/><Route path="/admin/*" element={<AdminContent/>}/></Routes></Suspense></ErrorBoundary>;
   return <>
     <SiteHeader />
-    <AnimatePresence mode="wait"><motion.main className="page-transition" key={location.pathname} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-4}} transition={{duration:.3,ease:[.22,1,.36,1]}}><Suspense fallback={<div className="route-loading">Loading Crome India…</div>}>
+    <AnimatePresence mode="wait"><motion.main className="page-transition" key={location.pathname} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-4}} transition={{duration:.3,ease:[.22,1,.36,1]}}><ErrorBoundary><Suspense fallback={<div className="route-loading"><span className="route-loading-spinner" aria-hidden="true"/>Loading Crome India…</div>}>
       <Routes>
         <Route path="/" element={<HomePage/>}/><Route path="/about" element={<AboutPage/>}/>
         <Route path="/sports" element={<SportsPage/>}/><Route path="/sports/:slug" element={<SportPage/>}/>
@@ -62,7 +63,7 @@ function App() {
         <Route path="/find-your-surface" element={<FinderPage/>}/><Route path="/privacy-policy" element={<LegalPage kind="Privacy policy"/>}/>
         <Route path="/terms" element={<LegalPage kind="Terms of use"/>}/><Route path="*" element={<NotFoundPage/>}/>
       </Routes>
-    </Suspense></motion.main></AnimatePresence>
+    </Suspense></ErrorBoundary></motion.main></AnimatePresence>
     <SiteFooter/><MobileActionBar/><ContactBubbles/><ChatAssistant/><EnquiryPopup/>
   </>;
 }

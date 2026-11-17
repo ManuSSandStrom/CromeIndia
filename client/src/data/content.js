@@ -58,7 +58,7 @@ export const serviceDetails = {
 export { projectGalleryItems as galleryItems } from './images.js';
 export const settings = {
   name:'Crome India', companyName:'Crome India', category:'Sports Surfaces / Sports Infrastructure',
-  positioning:'Premium Surfaces. Exceptional Spaces.', email:'sales@cromeindia.com',
+  positioning:'Premium Surfaces. Exceptional Spaces.', email:'info@cromeindiagroup.com',
   phones:['9663556752'], whatsapp:'919663556752',
   office:'E5, Dhi Innovations, Bannerghatta Road, Venugopal Reddy Layout, Arekere, Bengaluru, Karnataka 560076',
   warehouse:'No. 93/7B, Mylasandra Road, Near GIBS Business School, Akshayanagar, Mylasandra, Karnataka 560114',
