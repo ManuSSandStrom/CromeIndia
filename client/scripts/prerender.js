@@ -7,11 +7,11 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../dist');
 const shell=await fs.readFile(path.join(root,'index.html'),'utf8');
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pages=[
-  {url:'/',title:'Premium Sports Surfaces & Sports Infrastructure',heading:'Surfaces built around the sport.',copy:'Premium sports-surface solutions for football, cricket, hockey, tennis, multisport and professional sports spaces.'},
+  {url:'/',title:'Premium Sports Turf & Surfaces',heading:'Surfaces built around the sport.',copy:'Premium sports turf and surfaces — football turf, cricket turf, hockey turf, multisport and artificial grass turf for professional sports spaces across Bangalore and South India.'},
   {url:'/about',title:'About Crome India',heading:'Premium surfaces. Exceptional spaces.',copy:'Crome India supports sports-surface and sports-infrastructure requirements with application-specific product information and professional enquiry support.'},
-  {url:'/sports',title:'Sports Surface Solutions',heading:'Start with the sport. Explore the surface.',copy:'Explore sports applications and review products configured in the Crome India catalogue.'},
-  ...sports.map(s=>({url:`/sports/${s.slug}`,title:`${s.name} Sports Surfaces`,heading:s.heroTitle||`${s.name.toUpperCase()} SURFACES`,copy:s.heroSubtitle||`Explore surface options for ${s.name.toLowerCase()} applications.`})),
-  {url:'/products',title:'Sports Surface Products',heading:'Explore products by sport and specification.',copy:'Review Crome India product records and compare available factual specifications.'},
+  {url:'/sports',title:'Sports Turf & Surface Solutions',heading:'Start with the sport. Explore the surface.',copy:'Explore turf and surface options by sport — football turf, cricket turf, hockey turf, tennis and multisport surfaces in the Crome India catalogue.'},
+  ...sports.map(s=>({url:`/sports/${s.slug}`,title:`${s.name} Turf & Sports Surfaces`,heading:s.heroTitle||`${s.name.toUpperCase()} SURFACES`,copy:s.heroSubtitle||`Explore ${s.name.toLowerCase()} turf and surface options for your project.`})),
+  {url:'/products',title:'Sports Turf & Surface Products',heading:'Explore products by sport and specification.',copy:'Browse Crome India turf and surface products and compare factual specifications for football turf, cricket turf, hockey and multisport surfaces.'},
   ...products.map(p=>({url:`/products/${p.slug}`,title:`${p.name} | ${p.category||p.sport}`,heading:p.name,copy:p.shortDescription||'Explore this Crome India sports turf and surface product and discuss its application with our team.'})),
   {url:'/services',title:'Sports Surface Solutions & Services',heading:'From application to specification.',copy:'From understanding the application to selecting the appropriate surface specification.'},
   ...services.map(s=>({url:`/services/${s.slug}`,title:s.title,heading:s.title,copy:s.description})),
