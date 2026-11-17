@@ -43,11 +43,11 @@ function App() {
       if (ogDesc) ogDesc.content = page.desc;
       let ogUrl = document.querySelector('meta[property="og:url"]');
       if (!ogUrl) { ogUrl = document.createElement('meta'); ogUrl.setAttribute('property','og:url'); document.head.append(ogUrl); }
-      ogUrl.content = `https://www.cromeindiagroup.com${path}`;
+      ogUrl.content = `https://cromeindiagroup.com${path}`;
     }
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.append(canonical); }
-    canonical.href = `https://www.cromeindiagroup.com${path}`;
+    canonical.href = `https://cromeindiagroup.com${path}`;
   }, [location.pathname]);
   if (isAdmin) return <ErrorBoundary><Suspense fallback={<div className="route-loading"><span className="route-loading-spinner" aria-hidden="true"/>Loading administration…</div>}><Routes><Route path="/admin" element={<AdminCRM/>}/><Route path="/admin/login" element={<AdminCRM/>}/><Route path="/admin/*" element={<AdminContent/>}/></Routes></Suspense></ErrorBoundary>;
   return <>
