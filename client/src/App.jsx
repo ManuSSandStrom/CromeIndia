@@ -5,10 +5,10 @@ import { SiteHeader, SiteFooter, MobileActionBar, ContactBubbles } from './layou
 import ChatAssistant from './components/ChatAssistant.jsx';
 import EnquiryPopup from './components/EnquiryPopup.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
-const page=name=>lazy(()=>import('./pages/Pages.jsx').then(module=>({default:module[name]})));
-const HomePage=page('HomePage'),AboutPage=page('AboutPage'),SportsPage=page('SportsPage'),SportPage=page('SportPage');
-const ProductsPage=page('ProductsPage'),ProductPage=page('ProductPage'),ServicesPage=page('ServicesPage'),GalleryPage=page('GalleryPage');
-const ContactPage=page('ContactPage'),FinderPage=page('FinderPage'),LegalPage=page('LegalPage'),NotFoundPage=page('NotFoundPage');
+// Public pages load eagerly (one shared module) so a fresh page load renders
+// straight over the prerendered content — no Suspense "Loading…" flash in
+// between. Admin stays lazy/code-split since it is never the landing route.
+import { HomePage, AboutPage, SportsPage, SportPage, ProductsPage, ProductPage, ServicesPage, GalleryPage, ContactPage, FinderPage, LegalPage, NotFoundPage } from './pages/Pages.jsx';
 const AdminCRM=lazy(()=>import('./admin/AdminCRM.jsx'));
 const AdminContent=lazy(()=>import('./admin/AdminContent.jsx'));
 
